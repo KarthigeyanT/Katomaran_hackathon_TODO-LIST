@@ -50,3 +50,6 @@ This project uses environment variables to manage sensitive information. Never c
 ## 📄 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+=======
+# Katomaran_hackathon_TODO-LIST
+>>>>>>> 43c87e47e300d8422bd47d02d8af86086a3fea4a

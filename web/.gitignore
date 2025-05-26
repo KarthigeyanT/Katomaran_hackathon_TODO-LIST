@@ -1,0 +1,72 @@
+# Compiled JavaScript files
+*.js
+*.dart.js
+*.js.deps
+*.js.map
+*.js.deps
+*.js.js
+*.js_1.part.js
+*.js_1.part.js.map
+*.js_2.part.js
+*.js_2.part.js.map
+*.part.js
+*.part.js.map
+
+# Generated files
+.dart_tool/
+.packages
+.pub-cache/
+.pub/
+build/
+
+# Web related
+.cache/
+.idea/
+.vscode/
+*.sublime-workspace
+*.sublime-project
+
+# Environment variables
+.env
+!.env.example
+
+# Logs
+logs
+*.log
+
+# Firebase
+.firebase/
+firebase-debug.log
+firebase-debug.*.log
+
+# Local development
+.webpack/
+
+# Don't commit build files
+*.dart.js
+*.dart.js.deps
+*.dart.js.map
+
+# Don't commit generated files
+build/
+
+# Don't commit pubspec.lock for library packages
+# pubspec.lock
+
+# Directory created by dartdoc
+# If you don't generate documentation locally you can remove this line
+doc/api/
+
+# Avoid committing generated Javascript files:
+*.dart.js
+*.part.js
+*.js.deps
+*.js.map
+*.js.deps
+*.js.js
+*.js_1.part.js
+*.js_1.part.js.map
+*.js_2.part.js
+*.js_2.part.js.map
+*.part.js
+*.part.js.map

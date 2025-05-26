@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Katomaran Hackathon</string>
+    
+    <!-- Facebook App ID -->
+    <string name="facebook_app_id" translatable="false">1880898542697941</string>
+    
+    <!-- Facebook Client Token (from Facebook Developer Console) -->
+    <string name="facebook_client_token" translatable="false">YOUR_FACEBOOK_CLIENT_TOKEN</string>
+    
+    <!-- Facebook Login Protocol Scheme -->
+    <string name="facebook_login_protocol_scheme" translatable="false">fb1880898542697941</string>
+    
+    <!-- Facebook App Name -->
+    <string name="facebook_app_name" translatable="false">Katomaran Hackathon</string>
+    
+    <!-- Facebook Deep Linking -->
+    <string name="fb_login_protocol_scheme" translatable="false">fb1880898542697941</string>
+</resources>

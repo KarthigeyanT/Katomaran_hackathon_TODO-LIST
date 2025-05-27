@@ -39,7 +39,8 @@ class _LoginScreenState extends State<LoginScreen> {
         password: _passwordController.text.trim(),
       );
       if (mounted) {
-        Navigator.pushReplacementNamed(context, AppConstants.homeRoute);
+        // Navigate to main with dashboard (index 0) as the initial screen
+        Navigator.pushReplacementNamed(context, '/main');
       }
     } on FirebaseAuthException catch (e) {
       if (mounted) {
@@ -105,7 +106,8 @@ class _LoginScreenState extends State<LoginScreen> {
       }
 
       if (userCredential != null && mounted) {
-        Navigator.pushReplacementNamed(context, AppConstants.homeRoute);
+        // Navigate to main with dashboard (index 0) as the initial screen
+        Navigator.pushReplacementNamed(context, '/main');
       } else if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
@@ -245,8 +247,9 @@ class _LoginScreenState extends State<LoginScreen> {
                               child: Text(
                                 'Forgot Password?',
                                 style: theme.textTheme.bodySmall?.copyWith(
-                                  color: AppTheme.primaryColor,
-                                  fontWeight: FontWeight.w500,
+                                  color: Colors.blue[700],
+                                  fontWeight: FontWeight.w600,
+                                  letterSpacing: 0.2,
                                 ),
                               ),
                             ),
@@ -508,17 +511,20 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
               child: ElevatedButton(
                 onPressed: _isLoading || _isFacebookLoading ? null : _login,
-                style: theme.elevatedButtonTheme.style?.copyWith(
-                  elevation: WidgetStateProperty.all(0),
-                  backgroundColor: WidgetStateProperty.resolveWith<Color>(
-                    (Set<WidgetState> states) {
-                      if (states.contains(WidgetState.pressed)) {
-                        return AppTheme.primaryDarkColor;
-                      }
-                      return AppTheme.primaryColor;
-                    },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppTheme.primaryColor,
+                  foregroundColor: Colors.white,
+                  elevation: 0,
+                  shadowColor: Colors.transparent,
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
                   ),
-                  overlayColor: WidgetStateProperty.all(AppTheme.primaryDarkColor.withAlpha(50)),
+                  textStyle: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                    letterSpacing: 0.5,
+                  ),
                 ),
                 child: _isLoading
                     ? const SizedBox(
@@ -526,17 +532,10 @@ class _LoginScreenState extends State<LoginScreen> {
                         height: 24,
                         child: CircularProgressIndicator(
                           strokeWidth: 2,
-                          valueColor: AlwaysStoppedAnimation<Color>(AppTheme.textOnPrimary),
+                          valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                         ),
                       )
-                    : Text(
-                        'Sign In',
-                        style: theme.textTheme.labelLarge?.copyWith(
-                          color: AppTheme.textOnPrimary,
-                          fontWeight: FontWeight.w600,
-                          fontSize: 16,
-                        ),
-                      ),
+                    : const Text('SIGN IN'),
               ),
             ),
           ),
@@ -648,17 +647,22 @@ class _LoginScreenState extends State<LoginScreen> {
                   Navigator.pushNamed(context, AppConstants.registerRoute);
                 },
                 style: TextButton.styleFrom(
-                  foregroundColor: AppTheme.primaryColor,
+                  foregroundColor: Colors.blue[700],
+                  backgroundColor: Colors.blue[50],
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),
+                    side: const BorderSide(color: Colors.blue, width: 1.5),
                   ),
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                  elevation: 0,
+                  shadowColor: Colors.transparent,
                 ),
                 child: Text(
                   'Sign Up',
                   style: theme.textTheme.bodyMedium?.copyWith(
-                    color: AppTheme.primaryColor,
+                    color: Colors.blue[700],
                     fontWeight: FontWeight.w600,
+                    letterSpacing: 0.2,
                   ),
                 ),
               ),

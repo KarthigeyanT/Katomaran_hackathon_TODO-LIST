@@ -12,7 +12,10 @@ import 'package:katomaran_hackathon/screens/register_screen.dart';
 import 'package:katomaran_hackathon/theme/app_theme.dart' as app_theme;
 import 'package:katomaran_hackathon/utils/constants.dart';
 import 'package:katomaran_hackathon/providers/task_provider.dart';
+import 'package:katomaran_hackathon/providers/theme_provider.dart';
 import 'package:katomaran_hackathon/services/auth_service.dart';
+
+// Theme provider is used via Consumer
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -49,25 +52,46 @@ class MyApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (_) => AuthService()),
         ChangeNotifierProvider(create: (_) => TaskProvider()),
-      ],
-      child: MaterialApp(
-        title: 'Task Manager',
-        debugShowCheckedModeBanner: false,
-        theme: app_theme.AppTheme.lightTheme.copyWith(
-          textTheme: GoogleFonts.interTextTheme(
-            Theme.of(context).textTheme,
-          ),
+        ChangeNotifierProvider(
+          create: (_) => ThemeProvider(),
+          // Initialize theme before first frame
+          lazy: false,
         ),
-        darkTheme: app_theme.AppTheme.lightTheme, // You can add a dark theme later
-        themeMode: ThemeMode.light,
-        initialRoute: '/splash',
-        routes: {
-          '/splash': (context) => const SplashScreen(),
-          AppConstants.homeRoute: (context) => const MainNavScreen(initialIndex: 1), // Home is at index 1
-          AppConstants.loginRoute: (context) => const LoginScreen(),
-          AppConstants.registerRoute: (context) => const RegisterScreen(),
-          // MainNavScreen handles all main app screens (Dashboard, Home, Profile, etc.)
-          '/main': (context) => const MainNavScreen(),
+      ],
+      child: Consumer<ThemeProvider>(
+        builder: (context, themeProvider, _) {
+          // Get the current theme data based on the theme mode
+          final isDark = themeProvider.themeMode == ThemeMode.dark;
+          final themeData = isDark ? app_theme.AppTheme.darkTheme : app_theme.AppTheme.lightTheme;
+          
+          // Apply custom text theme with Google Fonts
+          final textTheme = GoogleFonts.interTextTheme(themeData.textTheme);
+          
+          return MaterialApp(
+            title: 'Katomaran',
+            debugShowCheckedModeBanner: false,
+            theme: themeData.copyWith(
+              textTheme: textTheme,
+              // Ensure consistent theming for all widgets
+              appBarTheme: themeData.appBarTheme.copyWith(
+                backgroundColor: isDark ? app_theme.AppTheme.darkAppBarColor : app_theme.AppTheme.primaryColor,
+                foregroundColor: Colors.white,
+                elevation: 0,
+              ),
+              // Add more theme overrides as needed
+            ),
+            darkTheme: themeData,
+            themeMode: themeProvider.themeMode,
+            initialRoute: '/splash',
+            routes: {
+              '/splash': (context) => const SplashScreen(),
+              AppConstants.homeRoute: (context) => MainNavScreen(initialIndex: 0), // Dashboard is at index 0
+              AppConstants.loginRoute: (context) => const LoginScreen(),
+              AppConstants.registerRoute: (context) => const RegisterScreen(),
+              // MainNavScreen handles all main app screens (Dashboard, Home, Profile, etc.)
+              '/main': (context) => MainNavScreen(initialIndex: 0), // Default to Dashboard
+            },
+          );
         },
       ),
     );
@@ -85,18 +109,47 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    // Check if user is logged in after splash delay
-    Future.delayed(const Duration(seconds: 2), () {
-      final user = FirebaseAuth.instance.currentUser;
+    _initializeApp();
+  }
+
+  Future<void> _initializeApp() async {
+    try {
+      // Log app initialization start
+      AppLogger.i('Initializing app...');
+      
+      // Add a small delay for the splash screen
+      await Future.delayed(const Duration(seconds: 2));
+      
       if (!mounted) return;
+      
+      // Check authentication status
+      final user = FirebaseAuth.instance.currentUser;
+      
+      // Log user status and handle navigation
       if (user != null) {
-        // User is logged in - go to main app with bottom nav
-        Navigator.pushReplacementNamed(context, '/main');
+        AppLogger.i('User is already logged in: ${user.uid}');
+        // Set user identifier for crash reporting
+        await CrashReporting.setUserIdentifier(user.uid);
+        // Navigate to main app
+        if (mounted) {
+          Navigator.pushReplacementNamed(context, '/main');
+        }
       } else {
-        // User is NOT logged in - show login screen
+        AppLogger.i('No user logged in, showing login screen');
+        // Navigate to login screen
+        if (mounted) {
+          Navigator.pushReplacementNamed(context, AppConstants.loginRoute);
+        }
+      }
+    } catch (error, stackTrace) {
+      // Log any errors during initialization
+      AppLogger.e(error, stackTrace);
+      
+      // Even if there's an error, try to navigate to login screen
+      if (mounted) {
         Navigator.pushReplacementNamed(context, AppConstants.loginRoute);
       }
-    });
+    }
   }
 
   @override
@@ -135,17 +188,17 @@ class _SplashScreenState extends State<SplashScreen> {
               style: const TextStyle(
                 fontSize: 32,
                 fontWeight: FontWeight.bold,
-                color: Colors.white,
+                color: Colors.black87, // Changed from white to black87 for better visibility
                 letterSpacing: 1.2,
               ),
             ),
             const SizedBox(height: 8),
             // Tagline
-            const Text(
+            Text(
               'Stay organized, be productive',
               style: TextStyle(
                 fontSize: 16,
-                color: Colors.white70,
+                color: Colors.black54, // Changed from white70 to black54 for better visibility
               ),
             ),
           ],

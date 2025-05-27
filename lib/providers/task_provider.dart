@@ -2,7 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:katomaran_hackathon/models/task.dart';
 
 class TaskProvider with ChangeNotifier {
-  List<Task> _tasks = [];
+  final List<Task> _tasks = [];
   
   List<Task> get tasks => List.unmodifiable(_tasks);
   

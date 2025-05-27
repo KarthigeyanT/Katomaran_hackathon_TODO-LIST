@@ -1,3 +1,4 @@
+// Same imports as before
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -5,6 +6,7 @@ import 'package:flutter/foundation.dart';
 import 'package:katomaran_hackathon/services/auth_service.dart';
 import 'package:katomaran_hackathon/theme/app_theme.dart';
 import 'package:katomaran_hackathon/utils/constants.dart';
+import 'package:katomaran_hackathon/providers/theme_provider.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -27,9 +29,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   Future<void> _loadUserData() async {
     if (mounted) setState(() => _isLoading = true);
-    
     try {
-      // Force refresh the user data
       await FirebaseAuth.instance.currentUser?.reload();
       if (mounted) {
         setState(() {
@@ -38,11 +38,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
         });
       }
     } catch (e) {
-      debugPrint('Error loading user data: $e');
       if (mounted) {
         setState(() => _isLoading = false);
-      }
-      if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Failed to load user data')),
         );
@@ -55,13 +52,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
       setState(() => _isLoading = true);
       await _authService.signOut();
       if (mounted) {
-        Navigator.pushReplacementNamed(context, AppConstants.loginRoute);
+        Navigator.of(context).pushNamedAndRemoveUntil(AppConstants.loginRoute, (route) => false);
       }
     } catch (e) {
-      debugPrint('Error signing out: $e');
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Failed to sign out')),
+          SnackBar(
+            content: const Text('Failed to sign out'),
+            behavior: SnackBarBehavior.floating,
+            margin: const EdgeInsets.all(12),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          ),
         );
       }
     } finally {
@@ -71,72 +72,70 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     final user = _user ?? FirebaseAuth.instance.currentUser;
-    
+
     if (_isLoading) {
       return const Scaffold(
-        body: Center(
-          child: CircularProgressIndicator(),
-        ),
+        body: Center(child: CircularProgressIndicator()),
       );
     }
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Profile'),
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        centerTitle: true,
+        title: Text(
+          'Profile',
+          style: theme.textTheme.headlineSmall?.copyWith(
+            fontWeight: FontWeight.bold,
+            color: theme.colorScheme.onBackground,
+          ),
+        ),
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh),
             onPressed: _loadUserData,
-          ),
-          IconButton(
-            icon: const Icon(Icons.logout),
-            onPressed: _handleSignOut,
-          ),
+            color: theme.colorScheme.primary,
+          )
         ],
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            const SizedBox(height: 32),
-            // Profile Picture
-            CircleAvatar(
-              radius: 60,
-              backgroundColor: AppTheme.primaryLightColor,
-              backgroundImage: user?.photoURL != null
-                  ? NetworkImage(user!.photoURL!)
-                  : const AssetImage('assets/images/default_avatar.png') as ImageProvider,
-              child: user?.photoURL == null
-                  ? const Icon(Icons.person, size: 60, color: Colors.white)
-                  : null,
+            // Avatar
+            Center(
+              child: CircleAvatar(
+                radius: 54,
+                backgroundColor: AppTheme.primaryLightColor,
+                backgroundImage: user?.photoURL != null
+                    ? NetworkImage(user!.photoURL!)
+                    : const AssetImage('images/default_avatar.png') as ImageProvider,
+              ),
             ),
-            const SizedBox(height: 24),
-            // User Name
+            const SizedBox(height: 20),
+            // Display Name
             Text(
               user?.displayName ?? 'Guest User',
-              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+              style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+              textAlign: TextAlign.center,
             ),
-            const SizedBox(height: 8),
-            // User Email
+            const SizedBox(height: 6),
             Text(
               user?.email ?? 'No email provided',
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: AppTheme.textSecondary,
-                  ),
+              style: theme.textTheme.bodyMedium?.copyWith(color: AppTheme.textSecondary),
+              textAlign: TextAlign.center,
             ),
-            const SizedBox(height: 32),
-            // Account Details Card
+            const SizedBox(height: 28),
+            // Info card
             Card(
+              margin: const EdgeInsets.only(bottom: 28),
               elevation: 2,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
               child: Padding(
-                padding: const EdgeInsets.all(16.0),
+                padding: const EdgeInsets.all(16),
                 child: Column(
                   children: [
                     _buildListTile(
@@ -144,58 +143,67 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       title: 'Email',
                       subtitle: user?.email ?? 'Not provided',
                     ),
-                    const Divider(),
+                    const Divider(height: 20),
                     _buildListTile(
                       icon: Icons.phone,
                       title: 'Phone',
                       subtitle: user?.phoneNumber ?? 'Not provided',
                     ),
-                    const Divider(),
+                    const Divider(height: 20),
                     _buildListTile(
                       icon: Icons.verified_user,
                       title: 'Email Verified',
                       subtitle: user?.emailVerified == true ? 'Verified' : 'Not Verified',
                     ),
+                    const Divider(height: 20),
+                    Consumer<ThemeProvider>(
+                      builder: (context, themeProvider, _) {
+                        return ListTile(
+                          contentPadding: EdgeInsets.zero,
+                          leading: Icon(
+                            themeProvider.themePreference == ThemePreference.dark
+                                ? Icons.dark_mode
+                                : themeProvider.themePreference == ThemePreference.light
+                                    ? Icons.light_mode
+                                    : Icons.phone_android,
+                            color: theme.colorScheme.primary,
+                          ),
+                          title: const Text('Theme', style: TextStyle(fontWeight: FontWeight.bold)),
+                          subtitle: Text(
+                            themeProvider.themePreference == ThemePreference.dark
+                                ? 'Dark'
+                                : themeProvider.themePreference == ThemePreference.light
+                                    ? 'Light'
+                                    : 'System',
+                          ),
+                          onTap: () => _showThemeSelector(themeProvider),
+                        );
+                      },
+                    ),
                   ],
                 ),
               ),
             ),
-            const SizedBox(height: 24),
-            // User Since
-            if (user?.metadata.creationTime != null)
-              Text(
-                'Member since ${user!.metadata.creationTime!.year}',
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: AppTheme.textSecondary,
-                  fontStyle: FontStyle.italic,
-                ),
-              ),
-            const SizedBox(height: 24),
-            // Sign Out Button
+            // Sign out button
             SizedBox(
               width: double.infinity,
               child: ElevatedButton.icon(
                 onPressed: _isLoading ? null : _handleSignOut,
-                style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 14),
-                  backgroundColor: AppTheme.errorColor,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
                 icon: _isLoading
                     ? const SizedBox(
                         width: 20,
                         height: 20,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2,
-                          valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                        ),
+                        child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
                       )
                     : const Icon(Icons.logout, color: Colors.white),
                 label: Text(
-                  _isLoading ? 'Signing Out...' : 'Sign Out',
-                  style: const TextStyle(color: Colors.white, fontSize: 16),
+                  _isLoading ? 'Signing out...' : 'Sign Out',
+                  style: const TextStyle(color: Colors.white),
+                ),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppTheme.errorColor,
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                 ),
               ),
             ),
@@ -209,29 +217,52 @@ class _ProfileScreenState extends State<ProfileScreen> {
     required IconData icon,
     required String title,
     required String subtitle,
-    VoidCallback? onTap,
   }) {
     return ListTile(
-      leading: Icon(icon, color: AppTheme.primaryColor),
-      title: Text(
-        title,
-        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
-      ),
-      subtitle: Text(
-        subtitle.isNotEmpty ? subtitle : 'Not provided',
-        style: TextStyle(
-          color: subtitle.isNotEmpty 
-              ? AppTheme.textPrimary 
-              : AppTheme.textSecondary,
-          fontSize: 14,
-        ),
-      ),
       contentPadding: EdgeInsets.zero,
-      minVerticalPadding: 8,
-      onTap: onTap,
-      trailing: onTap != null 
-          ? const Icon(Icons.edit, size: 18, color: AppTheme.primaryColor)
-          : null,
+      minLeadingWidth: 24,
+      leading: Icon(icon, color: AppTheme.primaryColor),
+      title: Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
+      subtitle: Text(subtitle),
+    );
+  }
+
+  void _showThemeSelector(ThemeProvider themeProvider) {
+    showModalBottomSheet(
+      context: context,
+      builder: (_) => Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          RadioListTile<ThemePreference>(
+            title: const Text('System Default'),
+            value: ThemePreference.system,
+            groupValue: themeProvider.themePreference,
+            onChanged: (val) {
+              if (val != null) themeProvider.setThemePreference(val);
+              Navigator.pop(context);
+            },
+          ),
+          RadioListTile<ThemePreference>(
+            title: const Text('Light Theme'),
+            value: ThemePreference.light,
+            groupValue: themeProvider.themePreference,
+            onChanged: (val) {
+              if (val != null) themeProvider.setThemePreference(val);
+              Navigator.pop(context);
+            },
+          ),
+          RadioListTile<ThemePreference>(
+            title: const Text('Dark Theme'),
+            value: ThemePreference.dark,
+            groupValue: themeProvider.themePreference,
+            onChanged: (val) {
+              if (val != null) themeProvider.setThemePreference(val);
+              Navigator.pop(context);
+            },
+          ),
+          const SizedBox(height: 8),
+        ],
+      ),
     );
   }
 }

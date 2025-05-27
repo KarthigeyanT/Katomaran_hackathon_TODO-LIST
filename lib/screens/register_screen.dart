@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:katomaran_hackathon/theme/app_theme.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:katomaran_hackathon/utils/constants.dart';
-import 'dart:ui';
+import 'package:provider/provider.dart';
+import 'package:katomaran_hackathon/theme/app_theme.dart';
+import 'package:katomaran_hackathon/services/auth_service.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -20,6 +20,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
   bool _isLoading = false;
+  bool _isFacebookLoading = false;
 
   @override
   void dispose() {
@@ -28,6 +29,44 @@ class _RegisterScreenState extends State<RegisterScreen> {
     _passwordController.dispose();
     _confirmPasswordController.dispose();
     super.dispose();
+  }
+
+  Future<void> _signInWithFacebook() async {
+    setState(() => _isFacebookLoading = true);
+    
+    try {
+      final authService = Provider.of<AuthService>(context, listen: false);
+      final userCredential = await authService.signInWithFacebook();
+
+      if (userCredential != null && mounted) {
+        // Navigate to main with dashboard (index 0) as the initial screen
+        Navigator.pushNamedAndRemoveUntil(
+          context,
+          '/main',
+          (route) => false,
+        );
+      } else if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Failed to sign in with Facebook. Please try again.'),
+            backgroundColor: AppTheme.errorColor,
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error during Facebook login: $e'),
+            backgroundColor: AppTheme.errorColor,
+          ),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isFacebookLoading = false);
+      }
+    }
   }
 
   Future<void> _register() async {
@@ -52,10 +91,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
       );
       
       if (mounted) {
-        // Navigate to home screen and remove all previous routes from stack
+        // Navigate to main screen with dashboard (index 0) as the initial screen
         Navigator.pushNamedAndRemoveUntil(
           context,
-          AppConstants.homeRoute,
+          '/main',
           (route) => false,
         );
       }
@@ -444,17 +483,20 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           ),
                           child: ElevatedButton(
                             onPressed: _isLoading ? null : _register,
-                            style: theme.elevatedButtonTheme.style?.copyWith(
-                              elevation: MaterialStateProperty.all(0),
-                              backgroundColor: MaterialStateProperty.resolveWith<Color>(
-                                (Set<MaterialState> states) {
-                                  if (states.contains(MaterialState.pressed)) {
-                                    return AppTheme.primaryDarkColor;
-                                  }
-                                  return AppTheme.primaryColor;
-                                },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: AppTheme.primaryColor,
+                              foregroundColor: Colors.white,
+                              elevation: 0,
+                              shadowColor: Colors.transparent,
+                              padding: const EdgeInsets.symmetric(vertical: 16),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
                               ),
-                              overlayColor: MaterialStateProperty.all(AppTheme.primaryDarkColor.withAlpha(50)),
+                              textStyle: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                                letterSpacing: 0.5,
+                              ),
                             ),
                             child: _isLoading
                                 ? const SizedBox(
@@ -462,17 +504,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                     height: 24,
                                     child: CircularProgressIndicator(
                                       strokeWidth: 2,
-                                      valueColor: AlwaysStoppedAnimation<Color>(AppTheme.textOnPrimary),
+                                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                                     ),
                                   )
-                                : Text(
-                                    'Create Account',
-                                    style: theme.textTheme.labelLarge?.copyWith(
-                                      color: AppTheme.textOnPrimary,
-                                      fontWeight: FontWeight.w600,
-                                      fontSize: 16,
-                                    ),
-                                  ),
+                                : const Text('CREATE ACCOUNT'),
                           ),
                         ),
                       ),
@@ -494,24 +529,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   ],
                 ),
                 const SizedBox(height: 24),
-                // Social Login Buttons
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    _buildSocialButton(
-                      icon: Icons.g_mobiledata,
-                      onPressed: () {
-                        // TODO: Implement Google Sign In
-                      },
-                    ),
-                    const SizedBox(width: 24),
-                    _buildSocialButton(
-                      icon: Icons.facebook,
-                      onPressed: () {
-                        // TODO: Implement Facebook Sign In
-                      },
-                    ),
-                  ],
+                // Facebook Login Button
+                Center(
+                  child: _buildSocialButton(
+                    icon: Icons.facebook,
+                    onPressed: _isFacebookLoading ? null : _signInWithFacebook,
+                    isLoading: _isFacebookLoading,
+                  ),
                 ),
                 const SizedBox(height: 24),
                       // Login Link with animation
@@ -539,17 +563,22 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                 Navigator.pop(context);
                               },
                               style: TextButton.styleFrom(
-                                foregroundColor: AppTheme.primaryColor,
+                                foregroundColor: Colors.blue[700],
+                                backgroundColor: Colors.blue[50],
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(8),
+                                  side: const BorderSide(color: Colors.blue, width: 1.5),
                                 ),
-                                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                                elevation: 0,
+                                shadowColor: Colors.transparent,
                               ),
                               child: Text(
                                 'Sign In',
                                 style: theme.textTheme.bodyMedium?.copyWith(
-                                  color: AppTheme.primaryColor,
+                                  color: Colors.blue[700],
                                   fontWeight: FontWeight.w600,
+                                  letterSpacing: 0.2,
                                 ),
                               ),
                             ),
@@ -569,7 +598,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   Widget _buildSocialButton({
     required IconData icon,
-    required VoidCallback onPressed,
+    required VoidCallback? onPressed,
+    bool isLoading = false,
   }) {
     return Container(
       width: 60,

@@ -58,14 +58,14 @@ afterEvaluate {
             // Make sure this matches your package name
             applicationId = "com.example.katomaran_hackathon"
             
-            // Add these lines
+            // Facebook configuration
             manifestPlaceholders["facebookAppId"] = "@string/facebook_app_id"
-            manifestPlaceholders["facebookClientToken"] = "@string/facebook_client_token"
-            manifestPlaceholders["fbLoginProtocolScheme"] = "fb${facebook_app_id}"
+            manifestPlaceholders["facebookClientToken"] = "" // Making client token optional
+            manifestPlaceholders["fbLoginProtocolScheme"] = "@string/facebook_login_protocol_scheme"
             
-            // Add this if you're using Facebook SDK v12.0.0 or higher
-            buildConfigField("String", "FACEBOOK_APP_ID", '"@string/facebook_app_id"')
-            buildConfigField("String", "FACEBOOK_CLIENT_TOKEN", '"@string/facebook_client_token"')
+            // Facebook SDK configuration
+            buildConfigField("String", "FACEBOOK_APP_ID", "\"@string/facebook_app_id\"")
+            buildConfigField("String", "FACEBOOK_CLIENT_TOKEN", "\"\"") // Empty client token
         }
     }
 }

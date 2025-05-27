@@ -109,47 +109,18 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    _initializeApp();
-  }
-
-  Future<void> _initializeApp() async {
-    try {
-      // Log app initialization start
-      AppLogger.i('Initializing app...');
-      
-      // Add a small delay for the splash screen
-      await Future.delayed(const Duration(seconds: 2));
-      
-      if (!mounted) return;
-      
-      // Check authentication status
+    // Check if user is logged in after splash delay
+    Future.delayed(const Duration(seconds: 2), () {
       final user = FirebaseAuth.instance.currentUser;
-      
-      // Log user status and handle navigation
+      if (!mounted) return;
       if (user != null) {
-        AppLogger.i('User is already logged in: ${user.uid}');
-        // Set user identifier for crash reporting
-        await CrashReporting.setUserIdentifier(user.uid);
-        // Navigate to main app
-        if (mounted) {
-          Navigator.pushReplacementNamed(context, '/main');
-        }
+        // User is logged in - go to main app with bottom nav
+        Navigator.pushReplacementNamed(context, '/main');
       } else {
-        AppLogger.i('No user logged in, showing login screen');
-        // Navigate to login screen
-        if (mounted) {
-          Navigator.pushReplacementNamed(context, AppConstants.loginRoute);
-        }
-      }
-    } catch (error, stackTrace) {
-      // Log any errors during initialization
-      AppLogger.e(error, stackTrace);
-      
-      // Even if there's an error, try to navigate to login screen
-      if (mounted) {
+        // User is NOT logged in - show login screen
         Navigator.pushReplacementNamed(context, AppConstants.loginRoute);
       }
-    }
+    });
   }
 
   @override

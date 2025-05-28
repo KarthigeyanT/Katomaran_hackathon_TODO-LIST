@@ -62,60 +62,111 @@ graph TD
     
     %% Authentication
     Auth -->|Uses| Facebook[🔵 Facebook Graph API]
-    Auth -->|Uses| FirebaseAuth[🔥 Firebase Authentication]
+    Auth -->|Uses| FirebaseAuth[🔐 Firebase Auth]
     
     %% Data Layer
-    TaskService -->|Read/Write| LocalDB[💾 Local Database]
-    TaskService -->|Sync| CloudDB[☁️ Cloud Firestore]
+    TaskService -->|Manages| LocalStorage[💾 Local Storage]
     
     %% Logging
     Logger -->|Logs to| Console[💻 Console]
     Logger -->|Saves to| LogStorage[📂 Log Files]
+    
+    %% Theme
+    UI -->|Supports| Theme[🌓 Light/Dark Theme]
     
     %% Styling
     classDef ui fill:#4285F4,stroke:#1A73E8,color:white,rounded:10px
     classDef service fill:#34A853,stroke:#1E8E3E,color:white,rounded:10px
     classDef auth fill:#EA4335,stroke:#D23F31,color:white,rounded:10px
     classDef storage fill:#FBBC05,stroke:#F9AB00,color:black,rounded:10px
-    classDef external fill:#9C27B0,stroke:#7B1FA2,color:white,rounded:10px
+    classDef theme fill:#9C27B0,stroke:#7B1FA2,color:white,rounded:10px
+    classDef external fill:#607D8B,stroke:#455A64,color:white,rounded:10px
     
     class UI,Provider ui
     class Auth,TaskService,Logger service
     class Facebook,FirebaseAuth auth
-    class LocalDB,CloudDB,LogStorage storage
+    class LocalStorage,LogStorage storage
+    class Theme theme
     class Console external
 ```
 
-## 🎯 Project Scope & Requirements
+## 🎯 App Features
 
-### Core Features
+### 🌟 Core Features
 - **User Authentication**
-  - Facebook Login via Graph API
-  - Email/Password fallback authentication
-  - Secure session management
+  - Secure login with Facebook
+  - Email/Password authentication
+  - Session management
 
 - **Task Management**
   - Create, Read, Update, Delete tasks
-  - Task categories and priorities
-  - Due date tracking with notifications
+  - Task prioritization
+  - Due date tracking
+  - Task categories
 
-- **Data Management**
-  - Offline-first architecture
-  - Real-time cloud sync
-  - Local data persistence
+- **Dashboard**
+  - Task overview
+  - Upcoming deadlines
+  - Task completion statistics
+  - Quick actions
 
-- **Logging & Monitoring**
-  - Comprehensive event logging
-  - Error tracking and reporting
+- **Calendar Integration**
+  - Monthly/weekly view
+  - Task deadlines visualization
+  - Quick add from calendar
+
+- **Theme & UI**
+  - Light/Dark mode toggle
+  - Responsive design
+  - Intuitive navigation
+
+- **Crash Reporting**
+  - Automatic crash logging
+  - Error reporting
   - Debug information capture
 
-### Technical Requirements
-- **Frontend**: Flutter (Dart)
+## 🔄 App Flow
+
+1. **Authentication**
+   - User lands on login screen
+   - Options: Facebook login or email/password
+   - Secure authentication handling
+
+2. **Home Screen**
+   - Task list overview
+   - Quick add task FAB
+   - Filter and sort options
+
+3. **Task Management**
+   - Create new tasks with details
+   - Edit existing tasks
+   - Mark tasks as complete
+   - Delete tasks with undo option
+
+4. **Dashboard**
+   - Task statistics
+   - Completion rates
+   - Productivity insights
+
+5. **Calendar View**
+   - Monthly overview
+   - Task deadlines
+   - Quick add from date selection
+
+6. **Settings**
+   - Theme toggle (Light/Dark)
+   - App preferences
+   - View app logs
+
+## 🛠️ Technical Stack
+- **Framework**: Flutter (Dart)
 - **State Management**: Provider
-- **Authentication**: Firebase Auth + Facebook Graph API
-- **Database**: Cloud Firestore with local caching
+- **Authentication**: Firebase Auth + Facebook SDK
+- **Local Storage**: SharedPreferences + Hive
 - **Logging**: Custom logger with file persistence
-- **Platforms**: Android, iOS, Web (responsive design)
+- **UI**: Material Design 3
+- **Theming**: Dynamic theme switching
+- **Platforms**: Android, iOS (responsive)
 
 ## 📄 License
 

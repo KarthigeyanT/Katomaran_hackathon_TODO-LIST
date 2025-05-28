@@ -1,8 +1,26 @@
 # Katomaran Hackathon - TODO List App
 
 [![Live Demo](https://img.shields.io/badge/🚀_Live_Demo-4285F4?style=for-the-badge&logo=firebase&logoColor=white)](https://katomaran-5516b.web.app)
+[![Video Explanation](https://img.shields.io/badge/📹_Video_Explanation-FF0000?style=for-the-badge&logo=youtube&logoColor=white)](https://drive.google.com/file/d/1tyI0T_rXzmuU2ntJPUqFQP9vgO13ISvX/view?usp=sharing)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](https://opensource.org/licenses/MIT)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=for-the-badge)](CONTRIBUTING.md)
 
-A Flutter-based task management application with Facebook authentication.
+A Flutter-based task management application with Facebook authentication. This application allows users to manage their tasks, set priorities, and track their progress in a clean and intuitive interface.
+
+## 📹 Video Demonstration
+
+Watch the [Video Explanation](https://drive.google.com/file/d/1tyI0T_rXzmuU2ntJPUqFQP9vgO13ISvX/view?usp=sharing) to see the application in action and understand its features and functionality.
+
+## 📚 Documentation
+
+- [📖 Project Documentation](#-project-documentation)
+- [🚀 Features](#-features)
+- [🛠️ Setup Instructions](#%EF%B8%8F-setup-instructions)
+- [🏗️ System Architecture](#%EF%B8%8F-system-architecture)
+- [🎯 App Features](#-app-features)
+- [🔄 App Flow](#-app-flow)
+- [🛠️ Technical Stack](#%EF%B8%8F-technical-stack)
+- [📄 License](#-license)
 
 ## 🚀 Features
 
@@ -170,8 +188,23 @@ graph TD
 - **Theming**: Dynamic theme switching
 - **Platforms**: Android, iOS (responsive)
 
+## 📄 Project Documentation
+
+For more detailed information, please refer to the following documentation:
+
+- [📜 Code of Conduct](CODE_OF_CONDUCT.md) - Our community guidelines
+- [🔒 Security Policy](SECURITY.md) - Reporting vulnerabilities and security measures
+- [🤝 Contributing Guide](CONTRIBUTING.md) - How to contribute to the project
+- [📋 Changelog](CHANGELOG.md) - Version history and changes
+
 ## 📄 License
 
-This project is a part of a hackathon run by [Katomaran](https://www.katomaran.com)
+This project is a part of a hackathon run by [Katomaran](https://www.katomaran.com).
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 🙏 Acknowledgments
+
+- Built with ❤️ by the Katomaran Hackathon Team
+- Special thanks to all contributors who have helped improve this project
+- Icons and illustrations from [Flutter Icons](https://api.flutter.dev/flutter/material/Icons-class.html)

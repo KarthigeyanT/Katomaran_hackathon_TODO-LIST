@@ -205,6 +205,5 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 🙏 Acknowledgments
 
-- Built with ❤️ by the Katomaran Hackathon Team
-- Special thanks to all contributors who have helped improve this project
+- Built with ❤️ for Katomaran Hackathon
 - Icons and illustrations from [Flutter Icons](https://api.flutter.dev/flutter/material/Icons-class.html)

@@ -1,7 +1,7 @@
 # Katomaran Hackathon - TODO List App
 
 [![Live Demo](https://img.shields.io/badge/🚀_Live_Demo-4285F4?style=for-the-badge&logo=firebase&logoColor=white)](https://katomaran-5516b.web.app)
-[![Video Explanation](https://img.shields.io/badge/📹_Video_Explanation-FF0000?style=for-the-badge&logo=youtube&logoColor=white)](https://drive.google.com/file/d/1tyI0T_rXzmuU2ntJPUqFQP9vgO13ISvX/view?usp=sharing)
+[![Video Explanation](https://img.shields.io/badge/📹_Video_Explanation-FF0000?style=for-the-badge&logo=youtube&logoColor=white)](https://drive.google.com/file/d/1LLjdNaNBXw9vsBovHc1gwkHKFS1bFfK0/view?usp=sharing)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](https://opensource.org/licenses/MIT)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=for-the-badge)](CONTRIBUTING.md)
 
@@ -9,7 +9,7 @@ A Flutter-based task management application with Facebook authentication. This a
 
 ## 📹 Video Demonstration
 
-Watch the [Video Explanation](https://drive.google.com/file/d/1tyI0T_rXzmuU2ntJPUqFQP9vgO13ISvX/view?usp=sharing) to see the application in action and understand its features and functionality.
+Watch the [Video Explanation](https://drive.google.com/file/d/1LLjdNaNBXw9vsBovHc1gwkHKFS1bFfK0/view?usp=sharing) to see the application in action and understand its features and functionality.
 
 ## 📚 Documentation
 

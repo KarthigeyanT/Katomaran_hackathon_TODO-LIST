@@ -6,6 +6,8 @@ import 'package:katomaran_hackathon/services/auth_service.dart';
 import 'package:katomaran_hackathon/theme/app_theme.dart';
 import 'package:katomaran_hackathon/utils/constants.dart';
 import 'package:katomaran_hackathon/providers/theme_provider.dart';
+import 'package:katomaran_hackathon/utils/logger_util.dart';
+import 'package:logger/logger.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -17,56 +19,51 @@ class ProfileScreen extends StatefulWidget {
 class _ProfileScreenState extends State<ProfileScreen> {
   bool _isLoading = false;
   User? _user;
-  late final AuthService _authService;
+  late final AuthService _authService = Provider.of<AuthService>(context, listen: false);
 
   @override
   void initState() {
     super.initState();
-    _authService = Provider.of<AuthService>(context, listen: false);
-    _loadUserData();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _loadUserData());
   }
 
   Future<void> _loadUserData() async {
-    if (mounted) setState(() => _isLoading = true);
+    setState(() => _isLoading = true);
     try {
       await FirebaseAuth.instance.currentUser?.reload();
-      if (mounted) {
-        setState(() {
-          _user = FirebaseAuth.instance.currentUser;
-          _isLoading = false;
-        });
-      }
+      setState(() {
+        _user = FirebaseAuth.instance.currentUser;
+        _isLoading = false;
+      });
     } catch (e) {
-      if (mounted) {
-        setState(() => _isLoading = false);
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Failed to load user data')),
-        );
-      }
+      AppLogger.log(Level.error, 'Failed to load user data: $e');
+      setState(() => _isLoading = false);
+      _showSnackBar('Failed to load user data');
     }
   }
 
   Future<void> _handleSignOut() async {
+    setState(() => _isLoading = true);
     try {
-      setState(() => _isLoading = true);
       await _authService.signOut();
-      if (mounted) {
-        Navigator.of(context).pushNamedAndRemoveUntil(AppConstants.loginRoute, (route) => false);
-      }
+      Navigator.of(context).pushNamedAndRemoveUntil(AppConstants.loginRoute, (route) => false);
     } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: const Text('Failed to sign out'),
-            behavior: SnackBarBehavior.floating,
-            margin: const EdgeInsets.all(12),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-          ),
-        );
-      }
+      AppLogger.log(Level.error, 'Failed to sign out: $e');
+      _showSnackBar('Failed to sign out');
     } finally {
-      if (mounted) setState(() => _isLoading = false);
+      setState(() => _isLoading = false);
     }
+  }
+
+  void _showSnackBar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        behavior: SnackBarBehavior.floating,
+        margin: const EdgeInsets.all(12),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      ),
+    );
   }
 
   @override
@@ -118,19 +115,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
             // Display Name
             Text(
               user?.displayName ?? 'Guest User',
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
+              style: theme.textTheme.titleLarge?.copyWith(
                 fontWeight: FontWeight.bold,
-                color: Theme.of(context).colorScheme.onSurface,
-                inherit: false,
+                color: theme.colorScheme.onSurface,
               ),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 6),
             Text(
               user?.email ?? 'No email provided',
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: Theme.of(context).textTheme.bodySmall?.color?.withAlpha((0.7 * 255).round()),
-                inherit: false,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: theme.textTheme.bodySmall?.color?.withAlpha((0.7 * 255).round()),
               ),
               textAlign: TextAlign.center,
             ),
@@ -198,7 +193,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               child: ElevatedButton.icon(
                 onPressed: _isLoading ? null : _handleSignOut,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Theme.of(context).colorScheme.error,
+                  backgroundColor: theme.colorScheme.error,
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
@@ -210,15 +205,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         height: 20,
                         child: CircularProgressIndicator(
                           strokeWidth: 2,
-                          color: Theme.of(context).colorScheme.onError,
+                          color: theme.colorScheme.onError,
                         ),
                       )
-                    : Icon(Icons.logout, color: Theme.of(context).colorScheme.onError),
+                    : Icon(Icons.logout, color: theme.colorScheme.onError),
                 label: Text(
                   _isLoading ? 'Signing out...' : 'Sign Out',
-                  style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                    color: Theme.of(context).colorScheme.onError,
-                    inherit: false,
+                  style: theme.textTheme.labelLarge?.copyWith(
+                    color: theme.colorScheme.onError,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -241,11 +235,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
       leading: Icon(icon, color: AppTheme.primaryColor),
       title: Text(title, style: Theme.of(context).textTheme.titleMedium?.copyWith(
         fontWeight: FontWeight.bold,
-        inherit: false,
       )),
-      subtitle: Text(subtitle, style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-        inherit: false,
-      )),
+      subtitle: Text(subtitle, style: Theme.of(context).textTheme.bodyMedium),
     );
   }
 
@@ -254,40 +245,54 @@ class _ProfileScreenState extends State<ProfileScreen> {
       context: context,
       builder: (BuildContext context) {
         final theme = Theme.of(context);
-        return Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            RadioListTile<ThemePreference>(
-              title: Text('System Default', style: theme.textTheme.bodyLarge),
-              value: ThemePreference.system,
-              groupValue: themeProvider.themePreference,
-              onChanged: (ThemePreference? val) {
-                if (val != null) themeProvider.setThemePreference(val);
-                Navigator.pop(context);
-              },
-            ),
-            RadioListTile<ThemePreference>(
-              title: Text('Light Theme', style: theme.textTheme.bodyLarge),
-              value: ThemePreference.light,
-              groupValue: themeProvider.themePreference,
-              onChanged: (ThemePreference? val) {
-                if (val != null) themeProvider.setThemePreference(val);
-                Navigator.pop(context);
-              },
-            ),
-            RadioListTile<ThemePreference>(
-              title: Text('Dark Theme', style: theme.textTheme.bodyLarge),
-              value: ThemePreference.dark,
-              groupValue: themeProvider.themePreference,
-              onChanged: (ThemePreference? val) {
-                if (val != null) themeProvider.setThemePreference(val);
-                Navigator.pop(context);
-              },
-            ),
-            const SizedBox(height: 8),
-          ],
+        return SafeArea(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 16.0),
+                child: Text(
+                  'Choose Theme',
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+              const Divider(height: 1),
+              RadioListTile<ThemePreference>(
+                title: const Text('System Default'),
+                subtitle: const Text('Use system theme settings'),
+                value: ThemePreference.system,
+                groupValue: themeProvider.themePreference,
+                onChanged: (val) => _handleThemeChange(val, themeProvider),
+              ),
+              RadioListTile<ThemePreference>(
+                title: const Text('Light'),
+                subtitle: const Text('Always use light theme'),
+                value: ThemePreference.light,
+                groupValue: themeProvider.themePreference,
+                onChanged: (val) => _handleThemeChange(val, themeProvider),
+              ),
+              RadioListTile<ThemePreference>(
+                title: const Text('Dark'),
+                subtitle: const Text('Always use dark theme'),
+                value: ThemePreference.dark,
+                groupValue: themeProvider.themePreference,
+                onChanged: (val) => _handleThemeChange(val, themeProvider),
+              ),
+              const SizedBox(height: 16),
+            ],
+          ),
         );
       },
     );
+  }
+
+  void _handleThemeChange(ThemePreference? preference, ThemeProvider themeProvider) {
+    if (preference != null) {
+      themeProvider.setThemePreference(preference);
+      Navigator.pop(context);
+      _showSnackBar('Theme changed to ${preference.toString().split('.').last}');
+    }
   }
 }

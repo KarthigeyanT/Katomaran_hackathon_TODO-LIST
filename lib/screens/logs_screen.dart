@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:katomaran_hackathon/utils/logger_util.dart';
 
 class LogsScreen extends StatelessWidget {
-  const LogsScreen({Key? key}) : super(key: key);
+  const LogsScreen({super.key});
 
   @override
   Widget build(BuildContext context) {

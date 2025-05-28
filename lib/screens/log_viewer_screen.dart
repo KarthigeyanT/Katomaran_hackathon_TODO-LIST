@@ -11,19 +11,18 @@ class LogViewerScreen extends StatefulWidget {
 
 class _LogViewerScreenState extends State<LogViewerScreen> {
   final ScrollController _scrollController = ScrollController();
-  bool _showDebug = true;
-  bool _showInfo = true;
-  bool _showWarning = true;
-  bool _showError = true;
-  bool _showFatal = true;
+  final Map<Level, bool> _filterMap = {
+    Level.debug: true,
+    Level.info: true,
+    Level.warning: true,
+    Level.error: true,
+    Level.fatal: true,
+  };
 
   @override
   void initState() {
     super.initState();
-    // Scroll to bottom when new logs are added
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _scrollToBottom();
-    });
+    WidgetsBinding.instance.addPostFrameCallback((_) => _scrollToBottom());
   }
 
   void _scrollToBottom() {
@@ -72,58 +71,18 @@ class _LogViewerScreenState extends State<LogViewerScreen> {
             padding: const EdgeInsets.all(8.0),
             child: Wrap(
               spacing: 8.0,
-              children: [
-                FilterChip(
-                  label: const Text('Debug'),
-                  selected: _showDebug,
-                  onSelected: (value) => setState(() => _showDebug = value),
-                  backgroundColor: Colors.blue.withOpacity(0.2),
-                  selectedColor: Colors.blue,
+              children: _filterMap.keys.map((level) {
+                return FilterChip(
+                  label: Text(level.name.toUpperCase()),
+                  selected: _filterMap[level]!,
+                  onSelected: (value) => setState(() => _filterMap[level] = value),
+                  backgroundColor: _getLogColor(level).withOpacity(0.2),
+                  selectedColor: _getLogColor(level),
                   labelStyle: TextStyle(
-                    color: _showDebug ? Colors.white : Colors.blue,
+                    color: _filterMap[level]! ? Colors.white : _getLogColor(level),
                   ),
-                ),
-                FilterChip(
-                  label: const Text('Info'),
-                  selected: _showInfo,
-                  onSelected: (value) => setState(() => _showInfo = value),
-                  backgroundColor: Colors.green.withOpacity(0.2),
-                  selectedColor: Colors.green,
-                  labelStyle: TextStyle(
-                    color: _showInfo ? Colors.white : Colors.green,
-                  ),
-                ),
-                FilterChip(
-                  label: const Text('Warning'),
-                  selected: _showWarning,
-                  onSelected: (value) => setState(() => _showWarning = value),
-                  backgroundColor: Colors.orange.withOpacity(0.2),
-                  selectedColor: Colors.orange,
-                  labelStyle: TextStyle(
-                    color: _showWarning ? Colors.white : Colors.orange,
-                  ),
-                ),
-                FilterChip(
-                  label: const Text('Error'),
-                  selected: _showError,
-                  onSelected: (value) => setState(() => _showError = value),
-                  backgroundColor: Colors.red.withOpacity(0.2),
-                  selectedColor: Colors.red,
-                  labelStyle: TextStyle(
-                    color: _showError ? Colors.white : Colors.red,
-                  ),
-                ),
-                FilterChip(
-                  label: const Text('Fatal'),
-                  selected: _showFatal,
-                  onSelected: (value) => setState(() => _showFatal = value),
-                  backgroundColor: Colors.purple.withOpacity(0.2),
-                  selectedColor: Colors.purple,
-                  labelStyle: TextStyle(
-                    color: _showFatal ? Colors.white : Colors.purple,
-                  ),
-                ),
-              ],
+                );
+              }).toList(),
             ),
           ),
           const Divider(height: 1),
@@ -131,14 +90,7 @@ class _LogViewerScreenState extends State<LogViewerScreen> {
           Expanded(
             child: Builder(
               builder: (context) {
-                final logs = AppLogger().logs.where((entry) {
-                  if (entry.level == Level.debug && !_showDebug) return false;
-                  if (entry.level == Level.info && !_showInfo) return false;
-                  if (entry.level == Level.warning && !_showWarning) return false;
-                  if (entry.level == Level.error && !_showError) return false;
-                  if (entry.level == Level.fatal && !_showFatal) return false;
-                  return true;
-                }).toList();
+                final logs = AppLogger().logs.where((entry) => _filterMap[entry.level] ?? false).toList();
 
                 return ListView.builder(
                   controller: _scrollController,
@@ -223,11 +175,10 @@ class _LogViewerScreenState extends State<LogViewerScreen> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          // Add some test logs
-          AppLogger.d('This is a debug message');
-          AppLogger.i('This is an info message');
-          AppLogger.w('This is a warning message');
-          AppLogger.e('This is an error message');
+          AppLogger.log(Level.debug, 'This is a debug message');
+          AppLogger.log(Level.info, 'This is an info message');
+          AppLogger.log(Level.warning, 'This is a warning message');
+          AppLogger.log(Level.error, 'This is an error message');
           setState(() {});
         },
         child: const Icon(Icons.add_alert),

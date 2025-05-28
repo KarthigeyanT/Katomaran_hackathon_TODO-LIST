@@ -9,6 +9,7 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart' show SharedPreferences;
 
 import 'firebase_options.dart';
+import 'services/auth_service.dart';
 import 'providers/theme_provider.dart';
 import 'screens/login_screen_new.dart';
 import 'screens/main_nav_screen.dart';
@@ -64,14 +65,17 @@ Future<void> main() async {
       runApp(
         MultiProvider(
           providers: [
+            ChangeNotifierProvider<AuthService>(
+              create: (context) => AuthService(),
+            ),
+            ChangeNotifierProvider<TaskProvider>(
+              create: (_) => TaskProvider(),
+            ),
             ChangeNotifierProvider(
               create: (_) => ThemeProvider()..setTheme(isDarkMode),
             ),
             Provider<FirebaseAuth>(
               create: (_) => FirebaseAuth.instance,
-            ),
-            ChangeNotifierProvider<TaskProvider>(
-              create: (_) => TaskProvider(),
             ),
           ],
           child: const MyApp(),

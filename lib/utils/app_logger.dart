@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:logger/logger.dart';
+import 'package:path_provider/path_provider.dart' as path_provider;
 
 class AppLogger {
   static final AppLogger _instance = AppLogger._internal();
@@ -35,32 +36,18 @@ class AppLogger {
     try {
       // Check if the platform supports file logging
       if (!kIsWeb && (Platform.isAndroid || Platform.isIOS)) {
-        final directory = await _getLogDirectory();
-        _logFile = File('${directory.path}/$_logFileName');
-
-        // Rotate logs if file is too big
-        if (await _logFile!.exists()) {
-          final length = await _logFile!.length();
-          if (length > _maxLogFileSize) {
-            await _rotateLogs();
-          }
-        } else {
+        final directory = await path_provider.getApplicationDocumentsDirectory();
+        _logFile = File('${directory.path}/app_logs.txt');
+        if (!await _logFile!.exists()) {
           await _logFile!.create(recursive: true);
         }
+        await _logFile!.writeAsString('--- Log Started at ${DateTime.now()} ---\n', mode: FileMode.append);
       } else {
         _logger.w('File logging is not supported on this platform.');
       }
     } catch (e) {
-      _logger.e('Failed to initialize log file: $e');
+      _logger.e('Error initializing log file: $e');
     }
-  }
-
-  Future<Directory> _getLogDirectory() async {
-    final directory = Directory('${Directory.current.path}/logs');
-    if (!await directory.exists()) {
-      await directory.create(recursive: true);
-    }
-    return directory;
   }
 
   Future<void> _rotateLogs() async {
@@ -178,6 +165,10 @@ class AppLogger {
       _logger.e('Failed to read logs: $e');
       return 'Error reading logs: $e';
     }
+  }
+
+  Future<Directory> _getLogDirectory() async {
+    return await path_provider.getApplicationDocumentsDirectory();
   }
 }
 

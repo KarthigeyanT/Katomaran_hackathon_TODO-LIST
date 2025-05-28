@@ -211,6 +211,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               style: theme.textTheme.headlineMedium?.copyWith(
                                 fontWeight: FontWeight.bold,
                                 color: AppTheme.textPrimary,
+                                backgroundColor: Colors.transparent,
+                                wordSpacing: 0.0,
+                                decorationThickness: 0.0,
                               ),
                             ),
                             const SizedBox(height: 8),
@@ -218,6 +221,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               'Fill in your details to get started',
                               style: theme.textTheme.bodyMedium?.copyWith(
                                 color: AppTheme.textSecondary,
+                                backgroundColor: Colors.transparent,
+                                wordSpacing: 0.0,
+                                decorationThickness: 0.0,
                               ),
                             ),
                           ],

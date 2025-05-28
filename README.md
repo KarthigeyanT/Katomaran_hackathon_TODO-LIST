@@ -47,35 +47,78 @@ A Flutter-based task management application with Facebook authentication.
 
 This project uses environment variables to manage sensitive information. Never commit your `.env` file to version control.
 
-## 🏗️ Architecture
+## 🏗️ System Architecture
 
 ```mermaid
 graph TD
-    A[UI Layer] -->|State Management| B[Provider]
-    B --> C[Services]
-    C --> D[Firebase Auth]
-    C --> E[Local Storage]
-    C --> F[API Services]
+    %% UI Layer
+    UI[📱 UI Layer]
+    UI -->|State Management| Provider[🔄 Provider State Management]
     
-    style A fill:#f9f,stroke:#333
-    style B fill:#bbf,stroke:#333
-    style C fill:#f96,stroke:#333
-    style D,E,F fill:#9cf,stroke:#333
+    %% Services Layer
+    Provider --> Auth[🔐 Authentication]
+    Provider --> TaskService[📋 Task Service]
+    Provider --> Logger[📝 Logger Service]
+    
+    %% Authentication
+    Auth -->|Uses| Facebook[🔵 Facebook Graph API]
+    Auth -->|Uses| FirebaseAuth[🔥 Firebase Authentication]
+    
+    %% Data Layer
+    TaskService -->|Read/Write| LocalDB[💾 Local Database]
+    TaskService -->|Sync| CloudDB[☁️ Cloud Firestore]
+    
+    %% Logging
+    Logger -->|Logs to| Console[💻 Console]
+    Logger -->|Saves to| LogStorage[📂 Log Files]
+    
+    %% Styling
+    classDef ui fill:#4285F4,stroke:#1A73E8,color:white,rounded:10px
+    classDef service fill:#34A853,stroke:#1E8E3E,color:white,rounded:10px
+    classDef auth fill:#EA4335,stroke:#D23F31,color:white,rounded:10px
+    classDef storage fill:#FBBC05,stroke:#F9AB00,color:black,rounded:10px
+    classDef external fill:#9C27B0,stroke:#7B1FA2,color:white,rounded:10px
+    
+    class UI,Provider ui
+    class Auth,TaskService,Logger service
+    class Facebook,FirebaseAuth auth
+    class LocalDB,CloudDB,LogStorage storage
+    class Console external
 ```
 
-## 🧩 Assumptions
+## 🎯 Project Scope & Requirements
 
-1. **Authentication**: Assumed Facebook authentication as the primary login method, with email/password as fallback.
-2. **Data Persistence**: Used local storage for offline access, with periodic sync to cloud.
-3. **User Experience**: Designed with a mobile-first approach, assuming most users will access via mobile devices.
-4. **Performance**: Assumed moderate list sizes for tasks, with pagination for large datasets.
-5. **Security**: Implemented basic security measures, with assumption of HTTPS for all API calls.
+### Core Features
+- **User Authentication**
+  - Facebook Login via Graph API
+  - Email/Password fallback authentication
+  - Secure session management
+
+- **Task Management**
+  - Create, Read, Update, Delete tasks
+  - Task categories and priorities
+  - Due date tracking with notifications
+
+- **Data Management**
+  - Offline-first architecture
+  - Real-time cloud sync
+  - Local data persistence
+
+- **Logging & Monitoring**
+  - Comprehensive event logging
+  - Error tracking and reporting
+  - Debug information capture
+
+### Technical Requirements
+- **Frontend**: Flutter (Dart)
+- **State Management**: Provider
+- **Authentication**: Firebase Auth + Facebook Graph API
+- **Database**: Cloud Firestore with local caching
+- **Logging**: Custom logger with file persistence
+- **Platforms**: Android, iOS, Web (responsive design)
 
 ## 📄 License
 
 This project is a part of a hackathon run by [Katomaran](https://www.katomaran.com)
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-=======
-# Katomaran_hackathon_TODO-LIST
->>>>>>> 43c87e47e300d8422bd47d02d8af86086a3fea4a

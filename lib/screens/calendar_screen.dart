@@ -57,14 +57,14 @@ class _CalendarScreenState extends State<CalendarScreen> {
     final eventsForSelectedDay = _getEventsForDay(_selectedDay!);
 
     return Scaffold(
-      backgroundColor: theme.colorScheme.background,
+      backgroundColor: theme.colorScheme.surface,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
         title: Text(
           'Calendar',
           style: theme.textTheme.headlineSmall?.copyWith(
-            color: theme.colorScheme.onBackground,
+            color: theme.colorScheme.onSurface,
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -81,7 +81,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
               borderRadius: BorderRadius.circular(12),
               boxShadow: [
                 BoxShadow(
-                  color: theme.colorScheme.onSurface.withOpacity(0.05),
+                  color: theme.colorScheme.onSurface.withAlpha((0.05 * 255).round()),
                   blurRadius: 8,
                   offset: const Offset(0, 2),
                 ),
@@ -139,7 +139,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
               calendarStyle: CalendarStyle(
                 outsideDaysVisible: false,
                 todayDecoration: BoxDecoration(
-                  color: theme.colorScheme.primary.withOpacity(0.2),
+                  color: theme.colorScheme.primary.withAlpha((0.2 * 255).round()),
                   shape: BoxShape.circle,
                 ),
                 selectedDecoration: BoxDecoration(
@@ -190,7 +190,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                                 Icon(
                                   Icons.event_busy,
                                   size: 64,
-                                  color: theme.colorScheme.onSurface.withOpacity(0.3),
+                                  color: theme.colorScheme.onSurface.withAlpha((0.3 * 255).round()),
                                 ),
                                 const SizedBox(height: 16),
                                 Text(

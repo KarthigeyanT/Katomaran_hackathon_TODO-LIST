@@ -202,7 +202,7 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
     final theme = Theme.of(context);
 
     return Scaffold(
-      backgroundColor: AppTheme.backgroundColor,
+      backgroundColor: AppTheme.surfaceColor,
       body: SafeArea(
         child: LayoutBuilder(
           builder: (context, constraints) {

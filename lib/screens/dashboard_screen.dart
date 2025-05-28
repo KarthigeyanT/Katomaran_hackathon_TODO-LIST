@@ -46,7 +46,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     final childAspectRatio = screenWidth < 600 ? 1.4 : 1.6; // Adjust aspect ratio for larger screens
 
     return Scaffold(
-      backgroundColor: colorScheme.background,
+      backgroundColor: colorScheme.surface,
       body: CustomScrollView(
         slivers: [
           SliverAppBar(
@@ -61,7 +61,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
               title: Text(
                 'Dashboard',
                 style: theme.textTheme.headlineSmall?.copyWith(
-                  color: colorScheme.onBackground,
+                  color: colorScheme.onSurface,
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -85,10 +85,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         onSelected: (selected) =>
                             setState(() => _selectedFilter = selected ? category : 'All'),
                         labelStyle: TextStyle(
-                          color: _selectedFilter == category ? colorScheme.onPrimary : colorScheme.onSurface.withOpacity(0.7),
+                          color: _selectedFilter == category
+                              ? colorScheme.onPrimary
+                              : colorScheme.onSurface.withAlpha((0.7 * 255).round()),
                         ),
                         selectedColor: colorScheme.primary,
-                        backgroundColor: colorScheme.surfaceVariant,
+                        backgroundColor: colorScheme.surfaceContainerHighest,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(16),
                         ),
@@ -166,7 +168,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                     decoration: BoxDecoration(
-                      color: colorScheme.primary.withOpacity(0.1),
+                      color: colorScheme.primary.withAlpha((0.1 * 255).round()),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Text(
@@ -192,11 +194,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       child: Center(
                         child: Column(
                           children: [
-                            Icon(Icons.celebration_rounded, size: 64, color: colorScheme.onSurface.withOpacity(0.1)),
+                            Icon(Icons.celebration_rounded, size: 64, color: colorScheme.onSurface.withAlpha((0.1 * 255).round())),
                             const SizedBox(height: 16),
                             Text(
                               'No upcoming tasks',
-                              style: theme.textTheme.bodyLarge?.copyWith(color: colorScheme.onSurface.withOpacity(0.6)),
+                              style: theme.textTheme.bodyLarge?.copyWith(color: colorScheme.onSurface.withAlpha((0.6 * 255).round())),
                             ),
                           ],
                         ),
@@ -252,7 +254,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
       child: Container(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: colorScheme.outline.withOpacity(0.08)),
+          border: Border.all(color: colorScheme.outline.withAlpha((0.08 * 255).round())),
         ),
         padding: EdgeInsets.all(padding),
         child: Column(
@@ -266,7 +268,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 Container(
                   padding: EdgeInsets.all(padding / 2),
                   decoration: BoxDecoration(
-                    color: color.withOpacity(0.1),
+                    color: color.withAlpha((0.1 * 255).round()),
                     shape: BoxShape.circle,
                   ),
                   child: Icon(icon, color: color, size: iconSize),
@@ -290,7 +292,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 Text(
                   title,
                   style: theme.textTheme.bodyMedium?.copyWith(
-                    color: colorScheme.onSurface.withOpacity(0.7),
+                    color: colorScheme.onSurface.withAlpha((0.4 * 255).round()),
                     fontSize: titleFontSize,
                   ),
                 ),

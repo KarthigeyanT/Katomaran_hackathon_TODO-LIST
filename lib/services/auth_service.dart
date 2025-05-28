@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
+import '../utils/logger_util.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:flutter/foundation.dart' show kIsWeb, kDebugMode;
@@ -18,26 +19,26 @@ class AuthService with ChangeNotifier {
   Future<UserCredential?> signInWithFacebook() async {
     try {
       if (kDebugMode) {
-        print('Starting Facebook login...');
+        AppLogger.i('Starting Facebook login...');
         if (kIsWeb) {
-          print('Running on web platform');
+          AppLogger.i('Running on web platform');
         }
       }
 
       // Request login permissions with email and public profile
-      print('Requesting Facebook login...');
+      AppLogger.i('Requesting Facebook login...');
       final LoginResult result = await facebookAuth.login(
         permissions: ['email', 'public_profile'],
       );
-      debugPrint('Facebook login result: ${result.status}');
+      AppLogger.i('Facebook login result: ${result.status}');
 
       if (result.status == LoginStatus.success) {
         final AccessToken? accessToken = result.accessToken;
-        debugPrint('Facebook access token: ${accessToken?.tokenString}');
+        AppLogger.i('Facebook access token: ${accessToken?.tokenString}');
 
         // Get the user data from Facebook
         final userData = await facebookAuth.getUserData();
-        debugPrint('Facebook user data: $userData');
+        AppLogger.i('Facebook user data: $userData');
 
         // Create a credential from the access token
         final OAuthCredential credential = 
@@ -64,30 +65,30 @@ class AuthService with ChangeNotifier {
           
           // Force token refresh to ensure the latest data
           await userCredential.user?.reload();
-          debugPrint('Updated user profile with Facebook data');
+          AppLogger.i('Updated user profile with Facebook data');
         }
         
-        debugPrint('Firebase sign in successful: ${userCredential.user?.uid}');
+        AppLogger.i('Firebase sign in successful: ${userCredential.user?.uid}');
         return userCredential;
       } else if (result.status == LoginStatus.cancelled) {
-        debugPrint('Facebook login was cancelled');
+        AppLogger.i('Facebook login was cancelled');
         throw FirebaseAuthException(
           code: 'ERROR_ABORTED_BY_USER',
           message: 'Sign in was cancelled by user',
         );
       } else {
-        debugPrint('Facebook login failed: ${result.message}');
+        AppLogger.e('Facebook login failed: ${result.message}');
         throw FirebaseAuthException(
           code: 'ERROR_FACEBOOK_LOGIN_FAILED',
           message: result.message,
         );
       }
     } on FirebaseAuthException catch (e) {
-      debugPrint('Firebase auth error in signInWithFacebook: ${e.code} - ${e.message}');
+      AppLogger.e('Firebase auth error in signInWithFacebook: ${e.code} - ${e.message}');
       rethrow;
     } catch (e, stackTrace) {
-      debugPrint('Error in signInWithFacebook: $e');
-      debugPrint('Stack trace: $stackTrace');
+      AppLogger.e('Error in signInWithFacebook: $e');
+      AppLogger.e('Stack trace: $stackTrace');
       throw FirebaseAuthException(
         code: 'ERROR_UNKNOWN',
         message: 'An unknown error occurred during Facebook sign in',

@@ -243,7 +243,7 @@ class AppTheme {
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
           foregroundColor: primaryColor,
-          side: BorderSide(color: primaryColor, width: 1.5),
+          side: BorderSide(color: primaryColor.withOpacity(0.1)),
           padding: EdgeInsets.symmetric(horizontal: 24, vertical: 16),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
@@ -394,7 +394,6 @@ class AppTheme {
         secondary: secondaryColor,
         error: darkErrorColor,
         surface: darkSurfaceColor,
-        background: darkBackgroundColor,
         onPrimary: darkTextPrimary,
         onSecondary: darkTextPrimary,
         onSurface: darkTextPrimary,
@@ -405,8 +404,8 @@ class AppTheme {
       dividerColor: darkDividerColor,
       cardColor: darkCardColor,
       canvasColor: darkSurfaceColor,
-      hoverColor: Colors.white.withOpacity(0.04),
-      highlightColor: Colors.white.withOpacity(0.1),
+      hoverColor: Colors.white.withAlpha((0.04 * 255).round()),
+      highlightColor: Colors.white.withAlpha((0.1 * 255).round()),
       indicatorColor: primaryColor,
       cardTheme: CardTheme(
         elevation: 1,

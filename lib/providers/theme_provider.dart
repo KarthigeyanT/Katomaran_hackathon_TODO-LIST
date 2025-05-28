@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:ui';
 
 enum ThemePreference { system, light, dark }
 
@@ -22,6 +23,15 @@ class ThemeProvider extends ChangeNotifier {
     _loadThemePreference();
   }
 
+  // Method to set theme from saved preferences
+  Future<void> setTheme(bool isDark) async {
+    _isDarkMode = isDark;
+    _themePreference = isDark ? ThemePreference.dark : ThemePreference.light;
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setInt(_themeKey, _themePreference.index);
+    notifyListeners();
+  }
+
   Future<void> _loadThemePreference() async {
     try {
       final prefs = await SharedPreferences.getInstance();
@@ -36,7 +46,7 @@ class ThemeProvider extends ChangeNotifier {
       
       // Update dark mode based on system brightness if preference is system
       if (_themePreference == ThemePreference.system) {
-        final window = WidgetsBinding.instance.window;
+        final window = PlatformDispatcher.instance;
         _isDarkMode = window.platformBrightness == Brightness.dark;
         window.onPlatformBrightnessChanged = () {
           if (_themePreference == ThemePreference.system) {
@@ -64,7 +74,7 @@ class ThemeProvider extends ChangeNotifier {
     _themePreference = preference;
     _isDarkMode = preference == ThemePreference.dark || 
                  (preference == ThemePreference.system && 
-                  WidgetsBinding.instance.window.platformBrightness == Brightness.dark);
+                  PlatformDispatcher.instance.platformBrightness == Brightness.dark);
     
     try {
       final prefs = await SharedPreferences.getInstance();

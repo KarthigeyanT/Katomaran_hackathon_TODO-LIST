@@ -49,8 +49,7 @@ dependencies:
   shared_preferences_web: ^2.2.1
   shared_preferences_android: ^2.2.1
   logger: ^2.0.2
-  firebase_crashlytics: ^4.1.1
-  firebase_analytics: ^11.4.2
+  path_provider: ^2.1.2
 
 dev_dependencies:
   flutter_test:

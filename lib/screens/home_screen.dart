@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:katomaran_hackathon/screens/task_form_screen.dart';
 import 'package:katomaran_hackathon/models/task.dart';
 import 'package:katomaran_hackathon/providers/task_provider.dart';
+import 'package:katomaran_hackathon/screens/logs_screen.dart';
 import 'package:provider/provider.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -84,7 +85,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     final tasks = _filterTasks(taskProvider.tasks);
 
     return Scaffold(
-      backgroundColor: theme.colorScheme.background,
+      backgroundColor: theme.colorScheme.surface,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -95,9 +96,23 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           'My Tasks',
           style: theme.textTheme.headlineSmall?.copyWith(
             fontWeight: FontWeight.bold,
-            color: theme.colorScheme.onBackground,
+            color: theme.colorScheme.onSurface,
           ),
         ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.bug_report),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => LogsScreen(),
+                ),
+              );
+            },
+            tooltip: 'View Logs',
+          ),
+        ],
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(48.0),
           child: Container(
@@ -107,7 +122,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               borderRadius: BorderRadius.circular(12),
               boxShadow: [
                 BoxShadow(
-                  color: theme.colorScheme.onSurface.withOpacity(0.05),
+                  color: theme.colorScheme.onSurface.withAlpha((0.05 * 255).round()),
                   blurRadius: 6,
                   offset: const Offset(0, 1),
                 ),
@@ -116,7 +131,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             child: TabBar(
               controller: _tabController,
               labelColor: theme.colorScheme.primary,
-              unselectedLabelColor: theme.colorScheme.onSurface.withOpacity(0.6),
+              unselectedLabelColor: theme.colorScheme.onSurface.withAlpha((0.6 * 255).round()),
               indicator: BoxDecoration(
                 border: Border(
                   bottom: BorderSide(
@@ -151,7 +166,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                     borderRadius: BorderRadius.circular(12),
                     boxShadow: [
                       BoxShadow(
-                        color: theme.colorScheme.onSurface.withOpacity(0.1),
+                        color: theme.colorScheme.onSurface.withAlpha((0.1 * 255).round()),
                         blurRadius: 8,
                         offset: const Offset(0, 2),
                       ),
@@ -271,7 +286,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                                 ),
                                               ),
                                               IconButton(
-                                                icon: Icon(Icons.edit, color: theme.iconTheme.color?.withOpacity(0.6)),
+                                                icon: Icon(Icons.edit, color: theme.iconTheme.color?.withAlpha((0.6 * 255).round())), 
                                                 onPressed: () {
                                                   Navigator.push(
                                                     context,
@@ -312,7 +327,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                               Container(
                                                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                                                 decoration: BoxDecoration(
-                                                  color: theme.colorScheme.primary.withOpacity(0.08),
+                                                  color: theme.colorScheme.primary.withAlpha((0.08 * 255).round()),
                                                   borderRadius: BorderRadius.circular(8),
                                                 ),
                                                 child: Text(

@@ -2,7 +2,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/foundation.dart';
 import 'package:katomaran_hackathon/services/auth_service.dart';
 import 'package:katomaran_hackathon/theme/app_theme.dart';
 import 'package:katomaran_hackathon/utils/constants.dart';
@@ -90,7 +89,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           'Profile',
           style: theme.textTheme.headlineSmall?.copyWith(
             fontWeight: FontWeight.bold,
-            color: theme.colorScheme.onBackground,
+            color: theme.colorScheme.onSurface,
           ),
         ),
         actions: [
@@ -119,13 +118,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
             // Display Name
             Text(
               user?.displayName ?? 'Guest User',
-              style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+              style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: Theme.of(context).colorScheme.onSurface,
+                inherit: false,
+              ),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 6),
             Text(
               user?.email ?? 'No email provided',
-              style: theme.textTheme.bodyMedium?.copyWith(color: AppTheme.textSecondary),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                color: Theme.of(context).textTheme.bodySmall?.color?.withAlpha((0.7 * 255).round()),
+                inherit: false,
+              ),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 28),
@@ -168,7 +174,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     : Icons.phone_android,
                             color: theme.colorScheme.primary,
                           ),
-                          title: const Text('Theme', style: TextStyle(fontWeight: FontWeight.bold)),
+                          title: Text('Theme', style: theme.textTheme.titleMedium?.copyWith(
+                            fontWeight: FontWeight.bold,
+                          )),
                           subtitle: Text(
                             themeProvider.themePreference == ThemePreference.dark
                                 ? 'Dark'
@@ -189,21 +197,30 @@ class _ProfileScreenState extends State<ProfileScreen> {
               width: double.infinity,
               child: ElevatedButton.icon(
                 onPressed: _isLoading ? null : _handleSignOut,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Theme.of(context).colorScheme.error,
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
                 icon: _isLoading
-                    ? const SizedBox(
+                    ? SizedBox(
                         width: 20,
                         height: 20,
-                        child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: Theme.of(context).colorScheme.onError,
+                        ),
                       )
-                    : const Icon(Icons.logout, color: Colors.white),
+                    : Icon(Icons.logout, color: Theme.of(context).colorScheme.onError),
                 label: Text(
                   _isLoading ? 'Signing out...' : 'Sign Out',
-                  style: const TextStyle(color: Colors.white),
-                ),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppTheme.errorColor,
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                    color: Theme.of(context).colorScheme.onError,
+                    inherit: false,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
               ),
             ),
@@ -222,47 +239,55 @@ class _ProfileScreenState extends State<ProfileScreen> {
       contentPadding: EdgeInsets.zero,
       minLeadingWidth: 24,
       leading: Icon(icon, color: AppTheme.primaryColor),
-      title: Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
-      subtitle: Text(subtitle),
+      title: Text(title, style: Theme.of(context).textTheme.titleMedium?.copyWith(
+        fontWeight: FontWeight.bold,
+        inherit: false,
+      )),
+      subtitle: Text(subtitle, style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+        inherit: false,
+      )),
     );
   }
 
   void _showThemeSelector(ThemeProvider themeProvider) {
-    showModalBottomSheet(
+    showModalBottomSheet<void>(
       context: context,
-      builder: (_) => Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          RadioListTile<ThemePreference>(
-            title: const Text('System Default'),
-            value: ThemePreference.system,
-            groupValue: themeProvider.themePreference,
-            onChanged: (val) {
-              if (val != null) themeProvider.setThemePreference(val);
-              Navigator.pop(context);
-            },
-          ),
-          RadioListTile<ThemePreference>(
-            title: const Text('Light Theme'),
-            value: ThemePreference.light,
-            groupValue: themeProvider.themePreference,
-            onChanged: (val) {
-              if (val != null) themeProvider.setThemePreference(val);
-              Navigator.pop(context);
-            },
-          ),
-          RadioListTile<ThemePreference>(
-            title: const Text('Dark Theme'),
-            value: ThemePreference.dark,
-            groupValue: themeProvider.themePreference,
-            onChanged: (val) {
-              if (val != null) themeProvider.setThemePreference(val);
-              Navigator.pop(context);
-            },
-          ),
-          const SizedBox(height: 8),
-        ],
-      ),
+      builder: (BuildContext context) {
+        final theme = Theme.of(context);
+        return Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            RadioListTile<ThemePreference>(
+              title: Text('System Default', style: theme.textTheme.bodyLarge),
+              value: ThemePreference.system,
+              groupValue: themeProvider.themePreference,
+              onChanged: (ThemePreference? val) {
+                if (val != null) themeProvider.setThemePreference(val);
+                Navigator.pop(context);
+              },
+            ),
+            RadioListTile<ThemePreference>(
+              title: Text('Light Theme', style: theme.textTheme.bodyLarge),
+              value: ThemePreference.light,
+              groupValue: themeProvider.themePreference,
+              onChanged: (ThemePreference? val) {
+                if (val != null) themeProvider.setThemePreference(val);
+                Navigator.pop(context);
+              },
+            ),
+            RadioListTile<ThemePreference>(
+              title: Text('Dark Theme', style: theme.textTheme.bodyLarge),
+              value: ThemePreference.dark,
+              groupValue: themeProvider.themePreference,
+              onChanged: (ThemePreference? val) {
+                if (val != null) themeProvider.setThemePreference(val);
+                Navigator.pop(context);
+              },
+            ),
+            const SizedBox(height: 8),
+          ],
+        );
+      },
     );
   }
 }

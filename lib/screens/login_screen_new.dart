@@ -177,7 +177,7 @@ class _LoginScreenState extends State<LoginScreen> {
             end: Alignment.bottomCenter,
             colors: [
               AppTheme.primaryLightColor.withAlpha(76), // 30% opacity
-              AppTheme.backgroundColor,
+              AppTheme.surfaceColor,
             ],
           ),
         ),

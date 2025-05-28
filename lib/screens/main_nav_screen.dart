@@ -88,7 +88,7 @@ class _MainNavScreenState extends State<MainNavScreen> {
           unselectedItemColor: AppTheme.textSecondary,
           selectedLabelStyle: const TextStyle(fontWeight: FontWeight.w600),
           unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.normal),
-          backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+          backgroundColor: Theme.of(context).colorScheme.surface,
           elevation: 8,
           items: [
             BottomNavigationBarItem(

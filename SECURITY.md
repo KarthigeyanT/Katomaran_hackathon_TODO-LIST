@@ -14,7 +14,7 @@ We take security seriously and appreciate your efforts to responsibly disclose a
 ### How to Report
 
 1. **Do not** create a public GitHub issue for security vulnerabilities
-2. Email security issues to: [karthigeyan.t@katomaran.com](mailto:karthigeyan.t@katomaran.com)
+2. Email security issues to: [karthigeyan.T](mailto:karthik.suthraye@gmail.com)
 3. Include a detailed description of the vulnerability
 4. Include steps to reproduce the issue
 5. If applicable, include screenshots or proof of concept code
